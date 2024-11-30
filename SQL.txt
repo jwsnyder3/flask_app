@@ -1,0 +1,298 @@
+DROP TABLE IF EXISTS responses;
+DROP TABLE IF EXISTS contacts;
+DROP TABLE IF EXISTS payments;
+DROP TABLE IF EXISTS reviews;
+DROP TABLE IF EXISTS address;
+DROP TABLE IF EXISTS inventory_transactions;
+DROP TABLE IF EXISTS inventory;
+DROP TABLE IF EXISTS specials;
+DROP TABLE IF EXISTS cart_items;
+DROP TABLE IF EXISTS carts;
+DROP TABLE IF EXISTS order_items;
+DROP TABLE IF EXISTS order_history;
+DROP TABLE IF EXISTS books;
+DROP TABLE IF EXISTS users;
+
+-- Create Users Table
+CREATE TABLE users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    first_name VARCHAR(255),
+    last_name VARCHAR(255),
+    phone_number VARCHAR(20),
+    registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_admin BOOLEAN DEFAULT FALSE
+);
+
+
+-- Create Books Table
+CREATE TABLE books (
+    book_id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    author VARCHAR(255),
+    publisher VARCHAR(255),
+    publication_date DATE,
+    genre VARCHAR(255),
+    description TEXT,
+    price DECIMAL(10, 2) NOT NULL,
+    isbn VARCHAR(20) UNIQUE,
+    url VARCHAR(2083)
+);
+
+
+-- Create Order History Table
+CREATE TABLE order_history (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned', 'Refunded', 'On Hold') DEFAULT 'Pending',
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+-- Create Order Items Table
+CREATE TABLE order_items (
+    order_item_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    book_id INT NOT NULL,
+    quantity INT NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES order_history(order_id),
+    FOREIGN KEY (book_id) REFERENCES books(book_id)
+);
+
+-- Create Carts Table
+CREATE TABLE carts (
+    cart_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+-- Create Cart Items Table
+CREATE TABLE cart_items (
+    cart_item_id INT AUTO_INCREMENT PRIMARY KEY,
+    cart_id INT NOT NULL,
+    book_id INT NOT NULL,
+    quantity INT NOT NULL,
+    FOREIGN KEY (cart_id) REFERENCES carts(cart_id),
+    FOREIGN KEY (book_id) REFERENCES books(book_id)
+);
+
+-- Create Specials Table
+CREATE TABLE specials (
+    special_id INT AUTO_INCREMENT PRIMARY KEY,
+    book_id INT NOT NULL,
+    discount_percent DECIMAL(5, 2),
+    special_start_date DATE,
+    special_end_date DATE,
+    is_discounted BOOLEAN DEFAULT TRUE,
+    special_type ENUM('Discount', 'New Arrival', 'Featured') DEFAULT 'Discount',
+    FOREIGN KEY (book_id) REFERENCES books(book_id)
+);
+
+-- Create Inventory Table
+CREATE TABLE inventory (
+    inventory_id INT AUTO_INCREMENT PRIMARY KEY,
+    book_id INT NOT NULL,
+    stock_quantity INT NOT NULL,
+    FOREIGN KEY (book_id) REFERENCES books(book_id)
+);
+
+-- Create Inventory Transactions Table
+CREATE TABLE inventory_transactions (
+    transaction_id INT AUTO_INCREMENT PRIMARY KEY,
+    book_id INT NOT NULL,
+    transaction_type ENUM('Restock', 'Sale') NOT NULL,
+    quantity INT NOT NULL,
+    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (book_id) REFERENCES books(book_id)
+);
+
+-- Create Address Table
+CREATE TABLE address (
+    address_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    street_address VARCHAR(255) NOT NULL,
+    city VARCHAR(255) NOT NULL,
+    state VARCHAR(255) NOT NULL,
+    zip_code VARCHAR(20) NOT NULL,
+    country VARCHAR(255) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+-- Create Reviews Table
+CREATE TABLE reviews (
+    review_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    book_id INT NOT NULL,
+    review_text TEXT,
+    rating INT CHECK(rating >= 1 AND rating <= 5),
+    review_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (book_id) REFERENCES books(book_id)
+);
+
+-- Create Payments Table
+CREATE TABLE payments (
+    payment_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    payment_amount DECIMAL(10, 2) NOT NULL,
+    payment_status ENUM('Pending', 'Completed', 'Refunded') DEFAULT 'Pending',
+    payment_method ENUM('Credit Card', 'PayPal', 'Bank Transfer', 'Cash on Delivery') DEFAULT 'Credit Card',
+    FOREIGN KEY (order_id) REFERENCES order_history(order_id)
+);
+
+CREATE TABLE contacts (
+    contact_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    message TEXT,
+    submitted_at DATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE responses (
+    response_id INT AUTO_INCREMENT PRIMARY KEY,
+    contact_id INT,
+    admin_response TEXT,
+    responded_at DATETIME,
+    FOREIGN KEY (contact_id) REFERENCES contacts(contact_id) ON DELETE CASCADE
+);
+
+
+-- Insert admin into users
+INSERT INTO users (username, email, password_hash, first_name, last_name, phone_number, is_admin) 
+VALUES
+    ('admin_user', 'admin@example.com', 'pbkdf2:sha256:150000$XP7DSOsC$178a009af9d397a57c23548c1befbdd80a4e64bc76ca642507905c58d69b2a24', 'Admin', 'User', '1234567890', TRUE);
+
+-- Insert unique books
+INSERT INTO books (title, author, publisher, publication_date, genre, description, price, isbn, url) 
+VALUES
+    ('Brave New World', 'Aldous Huxley', 'Chatto & Windus', '1932-01-01', 'Dystopian', 'A novel about a future society where individuality is suppressed.', 12.50, NULL, NULL),
+    ('The Hobbit', 'J.R.R. Tolkien', 'George Allen & Unwin', '1937-09-21', 'Fantasy', 'A tale of adventure in Middle-Earth, featuring hobbits, dwarfs, and dragons.', 14.99, NULL, NULL),
+    ('The Maze Runner', 'James Dashner', 'Delacorte Press', '2009-10-06', 'Dystopian', 'A young adult novel about a group of teens trapped in a mysterious maze.', 10.99, NULL, NULL),
+    ('The Hunger Games', 'Suzanne Collins', 'Scholastic Press', '2008-09-14', 'Dystopian', 'A survival novel set in a future totalitarian society.', 12.99, NULL, NULL),
+    ('Mockingjay', 'Suzanne Collins', 'Scholastic Press', '2010-08-24', 'Dystopian', 'The final book in The Hunger Games series, about rebellion and war.', 14.99, NULL, NULL),
+    ('Catching Fire', 'Suzanne Collins', 'Scholastic Press', '2009-09-01', 'Dystopian', 'The second book in The Hunger Games series, featuring a rebellion.', 13.50, NULL, NULL),
+    ('The Handmaid\'s Tale', 'Margaret Atwood', 'McClelland and Stewart', '1985-09-01', 'Dystopian', 'A novel about a theocratic society where women are subjugated.', 15.99, NULL, NULL),
+    ('The Giver', 'Lois Lowry', 'Houghton Mifflin', '1993-04-26', 'Dystopian', 'A young adult novel exploring a society without memories or emotions.', 9.99, NULL, NULL),
+    ('The Outsiders', 'S.E. Hinton', 'Viking Press', '1967-04-24', 'Young Adult', 'A novel about the struggles of a group of teenagers in the 1960s.', 10.49, NULL, NULL),
+    ('Fahrenheit 451', 'Ray Bradbury', 'Ballantine Books', '1953-10-19', 'Dystopian', 'A novel about a future society where books are banned.', 11.99, NULL, NULL),
+    ('1984', 'George Orwell', 'Secker & Warburg', '1949-06-08', 'Dystopian', 'A political dystopia about surveillance and totalitarianism.', 10.99, NULL, NULL),
+    ('The Invisible Man', 'H.G. Wells', 'Eveleigh Nash', '1897-01-01', 'Science Fiction', 'A novel about a scientist who becomes invisible and loses his humanity.', 8.99, NULL, NULL),
+    ('Dr. Jekyll and Mr. Hyde', 'Robert Louis Stevenson', 'Longmans, Green & Co.', '1886-01-01', 'Horror', 'A story about a man with a dual personality, one good and one evil.', 10.49, NULL, NULL),
+    ('Frankenstein', 'Mary Shelley', 'Lackington, Hughes, Harding, Mavor & Jones', '1818-01-01', 'Horror', 'A story about a scientist who creates a living creature that turns monstrous.', 12.99, NULL, NULL),
+    ('The Call of the Wild', 'Jack London', 'Macmillan', '1903-01-01', 'Adventure', 'A story about a dog in the Alaskan wilderness, battling for survival.', 9.99, NULL, NULL),
+    ('White Fang', 'Jack London', 'Macmillan', '1906-05-01', 'Adventure', 'A novel about the wild experiences of a wolf-dog in the northern wilderness.', 10.49, NULL, NULL),
+    ('The Secret Garden', 'Frances Hodgson Burnett', 'Frederick A. Stokes Company', '1911-08-01', 'Children\'s Literature', 'A story about a young girl discovering a hidden garden and healing herself.', 8.99, NULL, NULL),
+    ('Little Women', 'Louisa May Alcott', 'Roberts Brothers', '1868-09-30', 'Classic', 'A coming-of-age story of four sisters in the Civil War-era U.S.', 12.99, NULL, NULL),
+    ('Anne of Green Gables', 'L.M. Montgomery', 'L.C. Page & Co.', '1908-06-01', 'Children\'s Literature', 'A story about an imaginative orphan girl who finds a home.', 10.49, NULL, NULL),
+    ('The Little Prince', 'Antoine de Saint-Exupéry', 'Reynal & Hitchcock', '1943-04-06', 'Children\'s Literature', 'A philosophical story about a young prince who travels to different planets.', 11.50, NULL, NULL),
+    ('To Kill a Mockingbird', 'Harper Lee', 'J.B. Lippincott & Co.', '1960-07-11', 'Classic', 'A novel about racial injustice in the American South.', 13.99, NULL, NULL),
+    ('Pride and Prejudice', 'Jane Austen', 'T. Egerton', '1813-01-28', 'Classic', 'A romantic novel about manners, upbringing, and marriage.', 9.49, NULL, NULL),
+    ('Moby-Dick', 'Herman Melville', 'Harper & Brothers', '1851-10-18', 'Classic', 'A tale about obsession and revenge on the high seas.', 11.99, NULL, NULL),
+    ('The Great Gatsby', 'F. Scott Fitzgerald', 'Charles Scribner\'s Sons', '1925-04-10', 'Classic', 'A story about wealth, love, and ambition in the 1920s.', 10.99, NULL, NULL),
+    ('Crime and Punishment', 'Fyodor Dostoevsky', 'The Russian Messenger', '1866-01-01', 'Classic', 'A psychological novel about guilt and redemption.', 14.49, NULL, NULL),
+    ('War and Peace', 'Leo Tolstoy', 'The Russian Messenger', '1869-01-01', 'Classic', 'An epic novel about the lives of individuals during the Napoleonic Wars.', 18.99, NULL, NULL),
+    ('Wuthering Heights', 'Emily Brontë', 'Thomas Cautley Newby', '1847-12-01', 'Classic', 'A gothic tale of love and revenge on the Yorkshire moors.', 11.49, NULL, NULL),
+    ('Jane Eyre', 'Charlotte Brontë', 'Smith, Elder & Co.', '1847-10-16', 'Classic', 'A story about an orphaned girl\'s struggles and her love for Mr. Rochester.', 12.99, NULL, NULL),
+    ('The Catcher in the Rye', 'J.D. Salinger', 'Little, Brown and Company', '1951-07-16', 'Young Adult', 'A novel about teenage rebellion and alienation.', 13.99, NULL, NULL),
+    ('Of Mice and Men', 'John Steinbeck', 'Covici Friede', '1937-11-23', 'Classic', 'A story about friendship and the pursuit of the American Dream.', 9.99, NULL, NULL),
+    ('The Grapes of Wrath', 'John Steinbeck', 'The Viking Press', '1939-04-14', 'Classic', 'A novel about a family\'s struggles during the Great Depression.', 14.99, NULL, NULL),
+    ('Animal Farm', 'George Orwell', 'Secker & Warburg', '1945-08-17', 'Political Satire', 'An allegorical novella about power and corruption.', 9.49, NULL, NULL),
+    ('Lord of the Flies', 'William Golding', 'Faber and Faber', '1954-09-17', 'Classic', 'A novel about a group of boys stranded on an island and their descent into savagery.', 10.99, NULL, NULL),
+    ('The Alchemist', 'Paulo Coelho', 'HarperTorch', '1988-05-01', 'Philosophical', 'A story about following one\'s dreams and the meaning of life.', 11.99, NULL, NULL),
+    ('The Kite Runner', 'Khaled Hosseini', 'Riverhead Books', '2003-05-29', 'Drama', 'A story of friendship, betrayal, and redemption in Afghanistan.', 14.99, NULL, NULL),
+    ('A Thousand Splendid Suns', 'Khaled Hosseini', 'Riverhead Books', '2007-05-22', 'Drama', 'A novel about the lives of two women in Afghanistan.', 13.99, NULL, NULL),
+    ('The Road', 'Cormac McCarthy', 'Alfred A. Knopf', '2006-09-26', 'Dystopian', 'A post-apocalyptic tale of survival and love between a father and son.', 12.49, NULL, NULL),
+    ('The Shining', 'Stephen King', 'Doubleday', '1977-01-28', 'Horror', 'A story about a haunted hotel and its caretaker\'s descent into madness.', 14.99, NULL, NULL),
+    ('It', 'Stephen King', 'Viking', '1986-09-15', 'Horror', 'A novel about a group of friends facing a shape-shifting monster.', 19.99, NULL, NULL),
+    ('Misery', 'Stephen King', 'Viking', '1987-06-08', 'Horror', 'A psychological thriller about a novelist held captive by a fan.', 12.99, NULL, NULL),
+    ('The Da Vinci Code', 'Dan Brown', 'Doubleday', '2003-03-18', 'Thriller', 'A mystery novel about secrets hidden in Leonardo da Vinci\'s works.', 15.99, NULL, NULL),
+    ('Angels & Demons', 'Dan Brown', 'Pocket Books', '2000-05-01', 'Thriller', 'A novel about a secret society and a deadly conspiracy.', 14.49, NULL, NULL),
+    ('Inferno', 'Dan Brown', 'Doubleday', '2013-05-14', 'Thriller', 'A mystery centered on Dante\'s Inferno and a global epidemic.', 16.99, NULL, NULL),
+    ('Gone Girl', 'Gillian Flynn', 'Crown Publishing Group', '2012-06-05', 'Thriller', 'A psychological thriller about a marriage gone wrong.', 13.49, NULL, NULL),
+    ('Sharp Objects', 'Gillian Flynn', 'Shaye Areheart Books', '2006-09-26', 'Thriller', 'A dark mystery about a journalist returning to her hometown.', 12.99, NULL, NULL),
+    ('The Girl on the Train', 'Paula Hawkins', 'Riverhead Books', '2015-01-13', 'Thriller', 'A psychological thriller about a woman who witnesses a crime.', 14.99, NULL, NULL),
+    ('Big Little Lies', 'Liane Moriarty', 'Penguin', '2014-07-29', 'Drama', 'A story about secrets and lies in a small suburban town.', 13.99, NULL, NULL);
+
+
+-- Insert 6 Discount Specials with unique book_id
+INSERT INTO specials (book_id, discount_percent, special_start_date, special_end_date, is_discounted, special_type) 
+VALUES
+    (1, 15.00, '2024-11-01', '2024-11-30', TRUE, 'Discount'),
+    (2, 20.00, '2024-11-05', '2024-11-25', TRUE, 'Discount'),
+    (3, 10.00, '2024-11-01', '2024-11-20', TRUE, 'Discount'),
+    (4, 25.00, '2024-11-10', '2024-11-30', TRUE, 'Discount'),
+    (5, 30.00, '2024-11-15', '2024-11-25', TRUE, 'Discount'),
+    (6, 5.00, '2024-11-01', '2024-11-15', TRUE, 'Discount');
+
+-- Insert 6 New Arrival Specials with unique book_id
+INSERT INTO specials (book_id, discount_percent, special_start_date, special_end_date, is_discounted, special_type) 
+VALUES
+    (17, 0.00, '2024-11-01', '2024-11-30', FALSE, 'New Arrival'),
+    (18, 0.00, '2024-11-05', '2024-11-20', FALSE, 'New Arrival'),
+    (19, 0.00, '2024-11-10', '2024-11-25', FALSE, 'New Arrival'),
+    (20, 0.00, '2024-11-01', '2024-11-30', FALSE, 'New Arrival'),
+    (21, 0.00, '2024-11-01', '2024-11-20', FALSE, 'New Arrival'),
+    (22, 0.00, '2024-11-20', '2024-12-10', FALSE, 'New Arrival');
+
+-- Insert 6 Featured Specials with unique book_id
+INSERT INTO specials (book_id, discount_percent, special_start_date, special_end_date, is_discounted, special_type) 
+VALUES
+    (23, 0.00, '2024-11-01', '2024-11-30', FALSE, 'Featured'),
+    (24, 0.00, '2024-11-05', '2024-11-25', FALSE, 'Featured'),
+    (25, 0.00, '2024-11-10', '2024-11-30', FALSE, 'Featured'),
+    (26, 0.00, '2024-11-01', '2024-11-30', FALSE, 'Featured'),
+    (27, 0.00, '2024-11-01', '2024-11-25', FALSE, 'Featured'),
+    (28, 0.00, '2024-11-15', '2024-12-01', FALSE, 'Featured');
+
+-- Insert inventory data for all 53 books
+INSERT INTO inventory (book_id, stock_quantity) VALUES
+(1, 5),
+(2, 30),
+(3, 100),
+(4, 75),
+(5, 120),
+(6, 60),
+(7, 40),
+(8, 80),
+(9, 150),
+(10, 200),
+(11, 90),
+(12, 25),
+(13, 65),
+(14, 110),
+(15, 95),
+(16, 55),
+(17, 65),
+(18, 40),
+(19, 70),
+(20, 120),
+(21, 85),
+(22, 50),
+(23, 130),
+(24, 60),
+(25, 45),
+(26, 105),
+(27, 70),
+(28, 90),
+(29, 100),
+(30, 50),
+(31, 60),
+(32, 80),
+(33, 40),
+(34, 75),
+(35, 110),
+(36, 120),
+(37, 65),
+(38, 85),
+(39, 95),
+(40, 60),
+(41, 150),
+(42, 55),
+(43, 40),
+(44, 120),
+(45, 75),
+(46, 90),
+(47, 70);
