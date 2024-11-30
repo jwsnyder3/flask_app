@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart - Bookstore</title>
-    <link rel="stylesheet" type="text/css" href="{{ bucket }}styles.css" />
-    <script src="{{ bucket }}script.js"></script>
+    <link rel="stylesheet" type="text/css" href="../static/styles.css" />
+    <script src="../static/script.js"></script>
 </head>
 
 <body>
     <div class="header">
         <div class="logo">
-            <img src="../static/images/book.png" alt="Logo" />
+            <img src="../static/book.png" alt="Logo" />
             <h1>Bookstore</h1>
         </div>
         <div class="search-bar">
@@ -23,17 +23,17 @@
         </div>
         <div class="account">
             <a href="{{ url_for('account') }}">
-                <img src="../static/images/account.png" alt="Account" />
+                <img src="../static/account.png" alt="Account" />
             </a>
         </div>
         <div class="cart">
             <a href="{{ url_for('cart') }}">
-                <img src="../static/images/cart.png" alt="Shopping Cart" />
+                <img src="../static/cart.png" alt="Shopping Cart" />
             </a>
         </div>
         <div class="logout">
             <a href="{{ url_for('logout') }}">
-                <img src="../static/images/logout.png" alt="Logout" />
+                <img src="../static/logout.png" alt="Logout" />
             </a>
         </div>
     </div>
@@ -69,7 +69,7 @@
     <input type="hidden" name="action" value="add">
     <input type="hidden" name="item_id" value="{{ item.cart_item_id }}">
     <button type="submit" class="image-button">
-        <img src="../static/images/plus.png" alt="Increase Quantity" />
+        <img src="../static/plus.png" alt="Increase Quantity" />
     </button>
 </form>
 
@@ -78,7 +78,7 @@
     <input type="hidden" name="action" value="deduct">
     <input type="hidden" name="item_id" value="{{ item.cart_item_id }}">
     <button type="submit" class="image-button">
-        <img src="../static/images/minus.png" alt="Decrease Quantity" />
+        <img src="../static/minus.png" alt="Decrease Quantity" />
     </button>
 </form>
 
@@ -86,7 +86,7 @@
 <form method="POST" action="{{ url_for('remove_item') }}" class="cart-action-form">
     <input type="hidden" name="item_id" value="{{ item.cart_item_id }}">
     <button type="submit" class="image-button">
-        <img src="../static/images/trash.png" alt="Remove Item" />
+        <img src="../static/trash.png" alt="Remove Item" />
     </button>
 </form>
 </div>
@@ -116,44 +116,15 @@
             </div>
             <div class="footer-section social-icons">
                 <h4>Follow Us</h4>
-                <a href="#"><img src="{{ file_urls['facebook.png'] }}" alt="Facebook" /></a>
-                <a href="#"><img src="{{ file_urls['twitter.png'] }}" alt="Twitter" /></a>
-                <a href="#"><img src="{{ file_urls['instagram.png'] }}" alt="Instagram" /></a>
+                <a href="#"><img src="../static/facebook.png" alt="Facebook" /></a>
+                <a href="#"><img src="../static/twitter.png" alt="Twitter" /></a>
+                <a href="#"><img src="../static/instagram.png" alt="Instagram" /></a>
             </div>
         </div>
         <p>&copy; 2024 Bookstore. All rights reserved.</p>
     </div>
-    <script>
-        document.querySelectorAll('.image-button').forEach(button => {
-    button.addEventListener('click', (event) => {
-        const action = event.target.closest('button').getAttribute('data-action');
-        const itemId = event.target.closest('button').getAttribute('data-item-id');
-        
-        
-        fetch('/update_cart', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                item_id: itemId,
-                action: action
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-      
-                document.getElementById(`quantity-${itemId}`).textContent = data.new_quantity;
-                document.getElementById('total-price').textContent = data.new_total_price;
-            } else {
-                alert('Error updating cart');
-            }
-        });
-    });
-});
+    
 
-    </script>
 </body>
 
 </html>
