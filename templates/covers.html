@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Book Covers</title>
+    <link rel="stylesheet" type="text/css" href="../static/styles.css" />
+    <script src="../static/script.js"></script>
+</head>
+
+<body>
+    <div class="header">
+        <div class="logo">
+            <img src="../static/book.png" alt="Logo" />
+            <h1>Bookstore</h1>
+        </div>
+        <div class="logout">
+            <a href="{{ url_for('logout') }}">
+                <img src="../static/logout.png" alt="Logout" />
+            </a>
+        </div>
+    </div>
+
+    <div class="admin navbar">
+        <a href="{{ url_for('admin') }}"><button>Dashboard</button></a>
+        <div class="dropdown">
+            <button class="dropbtn">Users</button>
+            <div class="dropdown-content">
+                <a href="#"><button>User Info</button></a>
+                <a href="#"><button>User Carts</button></a>
+                <a href="#"><button>User Reviews</button></a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="dropbtn">Books</button>
+            <div class="dropdown-content">
+                <a href="#"><button>Book List</button></a>
+                <a href="#"><button>Book Specials</button></a>
+                <a href="{{ url_for('covers') }}"><button>Book Covers</button></a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="dropbtn">Inventory</button>
+            <div class="dropdown-content">
+                <a href="#"><button>Current Orders</button></a>
+                <a href="#"><button>Current Inventory</button></a>
+                <a href="#"><button>Transactions</button></a>
+                <a href="#"><button>Payments</button></a>
+            </div>
+        </div>
+        <a href="{{ url_for('admin_contact') }}"><button>Messages</button></a>
+    </div>
+
+    <div class="content covers">
+        <h2>Book Covers</h2>
+        <form action="{{ url_for('update_books') }}" method="POST">
+            <button type="submit">Update Book Covers</button>
+        </form>
+        <div class="covers-grid">
+            {% for cover in covers %}
+                {% if cover.url %}
+                    <div class="cover">
+                        <img src="{{ cover.url }}" alt="Book Cover" />
+                    </div>
+                {% else %}
+                    <p>No image available</p>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    
+
+    <div class="footer">
+        <p>&copy; 2024 Bookstore Admin Dashboard. All rights reserved.</p>
+    </div>
+</body>
+
+</html>

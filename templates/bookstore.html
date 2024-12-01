@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookstore Home</title>
+    <link rel="stylesheet" type="text/css" href="../static/styles.css" />
+    <script src="../static/script.js"></script>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="logo">
+            <img src="../static/book.png" alt="Logo" />
+            <h1>Bookstore</h1>
+        </div>
+        <div class="search-bar">
+            <form action="{{ url_for('search') }}" method="get">
+                <input type="search" name="search_key" placeholder="Search title, author, genre ..." aria-label="Search" />
+                <button type="submit">Search</button>
+            </form>
+        </div>
+        <div class="account">
+            <a href="{{ url_for('account') }}">
+                <img src="../static/account.png" alt="Account" />
+            </a>
+        </div>
+        <div class="cart">
+            <a href="{{ url_for('cart') }}">
+                <img src="../static/cart.png" alt="Shopping Cart" />
+            </a>
+        </div>
+        <div class="logout">
+            <a href="{{ url_for('logout') }}">
+                <img src="../static/logout.png" alt="Logout" />
+            </a>
+        </div>
+    </div>
+
+    <div class="navbar">
+        <a href="{{ url_for('bookstore') }}">Home</a>
+        <a href="{{ url_for('search') }}">Books</a>
+        <a href="{{ url_for('about') }}">About</a>
+        <a href="{{ url_for('contact') }}">Contact</a>
+    </div>
+
+    <div class="content bookstore">
+        <h2>Welcome to the Bookstore, {{ first_name }}!</h2>
+
+        <div class="featured-books">
+            <h3>Featured Books</h3>
+            <div class="book-list">
+                {% for book in books %} {% if book.special_type == 'Featured' %}
+                <div class="book-item">
+                    <img src="{{ book.url }}" alt="{{ book.title }}">
+                    <h4>{{ book.title }}</h4>
+                    <p>Author: {{ book.author }}</p>
+                    <p>Price: ${{ '%.2f' % book.price }}</p>
+                    <form action="{{ url_for('bookstore') }}" method="POST">
+                        <input type="hidden" name="book_id" value="{{ book.book_id }}">
+                        <button type="submit" class="btn btn-primary" {% if book.stock_quantity <=0 %}disabled{% endif %}>
+                            {% if book.stock_quantity <= 0 %}Out of Stock{% else %}Add to Cart{% endif %}
+                        </button>
+                    </form>
+                </div>
+                {% endif %} {% endfor %}
+            </div>
+        </div>
+
+        <div class="books-on-sale">
+            <h3>Books on Sale</h3>
+            <div class="book-list">
+                {% for book in books %} {% if book.special_type == 'Discount' %}
+                <div class="book-item">
+                    <img src="{{ book.url }}" alt="{{ book.title }}">
+                    <h4>{{ book.title }}</h4>
+                    <p>Author: {{ book.author }}</p>
+                    <p>
+                        Price:
+                        <span class="original-price">${{ '%.2f' % book.price }}</span> ${{ '%.2f' % book.discounted_price }}
+                    </p>
+                    <form action="{{ url_for('bookstore') }}" method="POST">
+                        <input type="hidden" name="book_id" value="{{ book.book_id }}">
+                        <button type="submit" class="btn btn-primary" {% if book.stock_quantity <=0 %}disabled{% endif %}>
+                            {% if book.stock_quantity <= 0 %}Out of Stock{% else %}Add to Cart{% endif %}
+                        </button>
+                    </form>
+                </div>
+                {% endif %} {% endfor %}
+            </div>
+        </div>
+
+        <div class="new-arrivals">
+            <h3>New Arrivals</h3>
+            <div class="book-list">
+                {% for book in books %} {% if book.special_type == 'New Arrival' %}
+                <div class="book-item">
+                    <img src="{{ book.url }}" alt="{{ book.title }}">
+                    <h4>{{ book.title }}</h4>
+                    <p>Author: {{ book.author }}</p>
+                    <p>Price: ${{ '%.2f' % book.price }}</p>
+                    <form action="{{ url_for('bookstore') }}" method="POST">
+                        <input type="hidden" name="book_id" value="{{ book.book_id }}">
+                        <button type="submit" class="btn btn-primary" {% if book.stock_quantity <=0 %}disabled{% endif %}>
+                            {% if book.stock_quantity <= 0 %}Out of Stock{% else %}Add to Cart{% endif %}
+                        </button>
+                    </form>
+                </div>
+                {% endif %} {% endfor %}
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <p>Email: support@bookstore.com</p>
+                    <p>Phone: +1 (555) 123-4567</p>
+                </div>
+                <div class="footer-section social-icons">
+                    <h4>Follow Us</h4>
+                    <a href="#"><img src="../static/facebook.png" alt="Facebook" /></a>
+                    <a href="#"><img src="../static/twitter.png" alt="Twitter" /></a>
+                    <a href="#"><img src="../static/instagram.png" alt="Instagram" /></a>
+                </div>
+            </div>
+            <p>&copy; 2024 Bookstore. All rights reserved.</p>
+        </div>
+
+</body>
+
+</html>
