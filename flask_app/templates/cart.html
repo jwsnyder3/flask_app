@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - Bookstore</title>
+    <link rel="stylesheet" type="text/css" href="../static/styles.css" />
+    <script src="../static/script.js"></script>
+</head>
+
+<body>
+    <div class="header">
+        <div class="logo">
+            <img src="../static/book.png" alt="Logo" />
+            <h1>Bookstore</h1>
+        </div>
+        <div class="search-bar">
+            <form action="{{ url_for('search') }}" method="get">
+                <input type="search" name="search_key" placeholder="Search title, author, genre ..." aria-label="Search" />
+                <button type="submit">Search</button>
+            </form>
+        </div>
+        <div class="account">
+            <a href="{{ url_for('account') }}">
+                <img src="../static/account.png" alt="Account" />
+            </a>
+        </div>
+        <div class="cart">
+            <a href="{{ url_for('cart') }}">
+                <img src="../static/cart.png" alt="Shopping Cart" />
+            </a>
+        </div>
+        <div class="logout">
+            <a href="{{ url_for('logout') }}">
+                <img src="../static/logout.png" alt="Logout" />
+            </a>
+        </div>
+    </div>
+
+    <div class="navbar">
+        <a href="{{ url_for('bookstore') }}">Home</a>
+        <a href="{{ url_for('search') }}">Books</a>
+        <a href="{{ url_for('about') }}">About</a>
+        <a href="{{ url_for('contact') }}">Contact</a>
+    </div>
+
+    <div class="content cart">
+        <h2>Your Cart</h2>
+    
+        <div class="cart-container">
+            {% for item in cart_items %}
+            <div class="book-item" id="item-{{ item.cart_item_id }}">
+                <img src="{{ item.url }}" alt="{{ item.title }}" class="book-image">
+                <div class="book-details">
+                    <h3>{{ item.title }}</h3>
+                    {% if item.discount_percent %}
+                        <p class="discounted-price">Discounted Price: ${{ '%.2f' % item.discounted_price }}</p>
+                        <p>Original Price: <span class="original-price">${{ '%.2f' % item.price }}</span></p>
+                    {% else %}
+                        <p>Price: ${{ '%.2f' % item.price }}</p>
+                    {% endif %}
+                    <p>Quantity: <span id="quantity-{{ item.cart_item_id }}">{{ item.quantity }}</span></p>
+                </div>
+        
+                <div class="cart-action-form-container">
+           
+<form method="POST" action="{{ url_for('update_cart') }}" class="cart-action-form">
+    <input type="hidden" name="action" value="add">
+    <input type="hidden" name="item_id" value="{{ item.cart_item_id }}">
+    <button type="submit" class="image-button">
+        <img src="../static/plus.png" alt="Increase Quantity" />
+    </button>
+</form>
+
+
+<form method="POST" action="{{ url_for('update_cart') }}" class="cart-action-form">
+    <input type="hidden" name="action" value="deduct">
+    <input type="hidden" name="item_id" value="{{ item.cart_item_id }}">
+    <button type="submit" class="image-button">
+        <img src="../static/minus.png" alt="Decrease Quantity" />
+    </button>
+</form>
+
+
+<form method="POST" action="{{ url_for('remove_item') }}" class="cart-action-form">
+    <input type="hidden" name="item_id" value="{{ item.cart_item_id }}">
+    <button type="submit" class="image-button">
+        <img src="../static/trash.png" alt="Remove Item" />
+    </button>
+</form>
+</div>
+
+                
+            </div>
+            {% endfor %}
+        </div>
+        
+        
+    
+        <div class="cart-summary">
+            <h3>Total Price: $<span id="total-price">{{ '%.2f' % total_price }}</span></h3>
+        </div>
+    
+        <div class="button-container">
+            <a href="{{ url_for('checkout') }}" class="button-link">Proceed to Checkout</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Contact Us</h4>
+                <p>Email: support@bookstore.com</p>
+                <p>Phone: +1 (555) 123-4567</p>
+            </div>
+            <div class="footer-section social-icons">
+                <h4>Follow Us</h4>
+                <a href="#"><img src="../static/facebook.png" alt="Facebook" /></a>
+                <a href="#"><img src="../static/twitter.png" alt="Twitter" /></a>
+                <a href="#"><img src="../static/instagram.png" alt="Instagram" /></a>
+            </div>
+        </div>
+        <p>&copy; 2024 Bookstore. All rights reserved.</p>
+    </div>
+    
+
+</body>
+
+</html>
