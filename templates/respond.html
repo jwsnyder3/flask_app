@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Respond to Contact</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles.css" />
+    <script src="/static/script.js"></script>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="logo">
+            <img src="/static/book.png" alt="Logo" />
+            <h1>Bookstore</h1>
+        </div>
+        <div class="logout">
+            <a href=" {{ url_for('logout') }} ">
+                <img src="/static/logout.png" alt="Logout" />
+            </a>
+        </div>
+    </div>
+
+    <div class="admin navbar"></div>
+
+    <div class="content respond">
+        <h2>Respond to Contact ID: {{ contact_id }}</h2>
+        <p><strong>Message:</strong> {{ contact['message'] }}</p>
+        <form method="POST">
+            <textarea name="response" rows="5" placeholder="Write your response here..." required></textarea>
+            <button type="submit">Submit Response</button>
+        </form>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 Bookstore Admin Dashboard. All rights reserved.</p>
+    </div>
+</body>
+
+</html>

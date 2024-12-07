@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Bookstore</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles.css" />
+    <script src="/static/script.js"></script>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="logo">
+            <h1>Bookstore</h1>
+        </div>
+        <div class="search-bar">
+            <form action="{{ url_for('search') }}" method="get">
+                <input type="search" name="search_key" placeholder="Search title, author, genre ..." aria-label="Search" />
+                <button type="submit">Search</button>
+            </form>
+        </div>
+        <div class="account">
+            <a href="{{ url_for('account') }}">
+                <img src="/static/account.png" alt="Account" />
+            </a>
+        </div>
+        <div class="cart">
+            <a href="{{ url_for('cart') }}">
+                <img src="/static/cart.png" alt="Shopping Cart" />
+            </a>
+        </div>
+        <div class="logout">
+            <a href="{{ url_for('logout') }}">
+                <img src="/static/logout.png" alt="Logout" />
+            </a>
+        </div>
+    </div>
+
+    <div class="navbar">
+        <a href="{{ url_for('bookstore') }}">Home</a>
+        <a href="{{ url_for('search') }}">Books</a>
+        <a href="{{ url_for('about') }}">About</a>
+        <a href="{{ url_for('contact') }}">Contact</a>
+    </div>
+
+    <div class="content about">
+        <h2>About Us</h2>
+
+        <div class="paragraph-container">
+            <p>Welcome to Bookstore, your one-stop shop for a wide variety of books across all genres.</p>
+        </div>
+
+        <div class="paragraph-container">
+            <p>At Bookstore, we believe in the power of books to educate, entertain, and inspire.</p>
+        </div>
+
+        <div class="paragraph-container">
+            <p>Whether you're purchasing a book for yourself or as a gift, Bookstore is dedicated to providing an enjoyable and seamless shopping experience.</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Contact Us</h4>
+                <p>Email: support@bookstore.com</p>
+                <p>Phone: +1 (555) 123-4567</p>
+            </div>
+            <div class="footer-section social-icons">
+                <h4>Follow Us</h4>
+                <a href="#"><img src="/static/facebook.png" alt="Facebook" /></a>
+                <a href="#"><img src="/static/twitter.png" alt="X" /></a>
+                <a href="#"><img src="/static/instagram.png" alt="Instagram" /></a>
+            </div>
+        </div>
+        <p>&copy; 2024 Bookstore. All rights reserved.</p>
+    </div>
+
+</body>
+
+</html>
