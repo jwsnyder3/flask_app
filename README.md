@@ -31,7 +31,7 @@ Follow the steps below to set up and deploy the Flask bookstore app.
       python3 setup_flask_app.py
    3. Activate the Python virtual environment:
       ```bash
-      source venv/in/activate
+      source venv/bin/activate
 
 ### **4. Nginx and gUnicorn configuration**
    ***Nginx Reverse Proxy***
