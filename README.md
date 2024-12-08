@@ -71,7 +71,7 @@ Follow the steps below to set up and deploy the Flask bookstore app.
       127.0.0.1 <YOUR_EC2_PUBLIC_IP>
       ```
 
-### **5. Start Flask App
+### **5. Start Flask App**
    1. Test the app locally:
       ```bash
       python3 app.py
@@ -81,5 +81,5 @@ Follow the steps below to set up and deploy the Flask bookstore app.
       gunicorn --bind 0.0.0.0:5000 wsgi:app
       ```
 
-### **6. Upload Static Files
+### **6. Upload Static Files**
    Ensure that the ***static*** folder in the Flask app is uploaded to the S3 bucket configured in your AWS CloudFormation stack.
