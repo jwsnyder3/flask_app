@@ -34,7 +34,7 @@ Follow the steps below to set up and deploy the Flask bookstore app.
       source venv/in/activate
 
 ### **4. Nginx and gUnicorn configuration**
-   **Nginx Reverse Proxy
+   ***Nginx Reverse Proxy***
    1. Create and edit the Nginx site configuration file:
       ```bash
       sudo nano /etc/nginx/sites-available/flask_app
