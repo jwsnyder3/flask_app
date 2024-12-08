@@ -51,3 +51,5 @@ The process to set up this flask app is as follows:
     $ python3 app.py
 
 14. gunicorn --bind 0.0.0.0:5000 wsgi:app
+
+15. Make sure the static folder is uploaded to the S3 bucket.
