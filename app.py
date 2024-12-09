@@ -2,7 +2,7 @@ from flask import Flask, request, redirect, render_template, flash, session, url
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 import mysql.connector
-import datetime
+from datetime import datetime
 import requests
 import boto3
 import os
